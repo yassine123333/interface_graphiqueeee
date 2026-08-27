@@ -3,6 +3,7 @@ const CHEVALET_CAPACITY = 450;
 const CHEVALET_MAX = 450;
 const LINGO_BASE_METRAGE = 4000;
 const THP_REEL_UNITAIRE = 0.04166063545;
+const TRS_TRG_RATIO = 1.406712313;
 
 // Parametres optimaux LINGO affiches dans l'interface.
 const LINGO_OPTIMAL = {
@@ -40,7 +41,9 @@ const MAIN_COEFFICIENTS = [
   { key: 'T_panne_machine', label: 'Panne machine', coeff: 0.0025, group: 'interne' },
   { key: 'T_manque_matiere_premiere', label: 'Manque matière première', coeff: 0.0018, group: 'externe' },
   { key: 'T_anomalies_de_passage', label: 'Anomalies de passage', coeff: 0.0014, group: 'externe' },
-  { key: 'T_probleme_qualite_foam_envers_endroit_complexe', label: 'Problème qualité Foam/Envers/Endroit/Complexe', coeff: 0.0033, group: 'externe' },
+  { key: 'T_probleme_qualite_foam', label: 'Problème qualité Foam', coeff: 0.000144749222, group: 'externe' },
+  { key: 'T_probleme_qualite_envers', label: 'Problème qualité Envers', coeff: 0.00004071071868, group: 'externe' },
+  { key: 'T_probleme_qualite_endroit', label: 'Problème qualité Endroit', coeff: 0.00002261706593, group: 'externe' },
   { key: 'T_facteurs_externes', label: 'Facteurs externes', coeff: 0.0021, group: 'externe' },
   { key: 'T_manque_planification', label: 'Manque planification', coeff: 0.0016, group: 'externe' },
   { key: 'T_manque_chevalet_enroulage', label: 'Manque chevalet d’enroulage', coeff: 0.0017, group: 'externe' },
@@ -171,8 +174,9 @@ function buildResults(values) {
   // laquelle reste un sous-poste des arrêts internes.
   const T_arrêt_total = T_interne + T_externe + THP + TMP;
   const T_pratique = metrage / values.vitesse;
-  const TRG = (T_pratique / TO) * 100;
-  const TRS = (T_pratique / (TO - THP)) * 100;
+  const leadTime = T_pratique + T_arrêt_total;
+  const TRG = (T_pratique / leadTime) * 100;
+  const TRS = TRS_TRG_RATIO * TRG;
   const T_pratique_optimal = LINGO_OPTIMAL.T_pratique_unitaire * LINGO_BASE_METRAGE;
   const THP_optimal = LINGO_OPTIMAL.THP_unitaire * LINGO_BASE_METRAGE;
   const TRS_optimal = (T_pratique_optimal / (TO - THP_optimal)) * 100;
@@ -186,7 +190,6 @@ function buildResults(values) {
   const percentVerification = (coeffs.T_verification_resultat / coeffs.T_changement_serie) * 100;
   const nChev = metrage / CHEVALET_CAPACITY;
   const frequenceNettoyageCylindre = metrage / 1500;
-  const leadTime = T_pratique + T_arrêt_total;
   const tempsCycle = leadTime / metrage;
 
   return {
