@@ -3,22 +3,22 @@ const CHEVALET_CAPACITY = 450;
 const CHEVALET_MAX = 450;
 const LINGO_BASE_METRAGE = 4000;
 const THP_REEL_UNITAIRE = 0.04166063545;
-const TRS_TRG_RATIO = 1.406712313;
+const TRS_TRG_RATIO = 1.3246;
 
 // Parametres optimaux LINGO affiches dans l'interface.
 const LINGO_OPTIMAL = {
-  T_pratique_unitaire: 0.0325464,
-  THP_unitaire: 0.03504675,
-  X1: 30.725,
-  X2: 90,
-  X3: 77.55,
+  T_pratique_unitaire: 0.033438,
+  THP_unitaire: 0.0350675,
+  X1: 29.9,
+  X2: 80,
+  X3: 70,
 };
 
 const DEFAULTS = {
   metrage: 2400,
   vitesse: 30,
-  tempMousse: 210,
-  tempEnvers: 198,
+  tempMousse: 80,
+  tempEnvers: 70,
   ecartHaut: 1.9,
   ecartBas: 1.8,
   operateurs: 5,
@@ -106,6 +106,14 @@ function validateValues(values) {
 
   if (values.vitesse < 29 || values.vitesse > 31) {
     throw new Error('La vitesse calandre (X1) doit être comprise entre 29 et 31 m/min.');
+  }
+
+  if (values.tempMousse < 80 || values.tempMousse > 90) {
+    throw new Error('La température brûleur mousse (X2) doit être comprise entre 80 et 90 °C.');
+  }
+
+  if (values.tempEnvers < 70 || values.tempEnvers > 80) {
+    throw new Error('La température brûleur envers (X3) doit être comprise entre 70 et 80 °C.');
   }
 }
 
